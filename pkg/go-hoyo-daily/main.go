@@ -25,53 +25,54 @@ func main() {
 	select {}
 }
 
+type HoyoCheckInOpt struct {
+	Name      string
+	SignInURL string
+	ActID     string
+}
+
 func doJob() {
 	var (
 		resp *resty.Response
 		err  error
 
-		hoyoCookie    = os.Getenv("HOYOLAB_COOKIES")
-		hoyoSignInUrl = os.Getenv("HOYOLAB_SIGN_IN_URL")
-
-		genshinActId = os.Getenv("GENSHIN_ACT_ID")
-		honkaiSR     = os.Getenv("HONKAI_SR_ACT_ID")
-		zenlessZZ    = os.Getenv("ZZZ_ACT_ID")
-		honkaiI3Rd   = os.Getenv("HI_3RD_ACT_ID")
-		tot          = os.Getenv("TOT_ACT_ID")
+		hoyoCookie = os.Getenv("HOYOLAB_COOKIES")
 	)
 
-	if genshinActId != "" {
-		resp, err = helper.ApiClientHoyo(hoyoSignInUrl, hoyoCookie, genshinActId).Post("")
-		helper.PanicIfError(err)
-
-		fmt.Println(resp, "Genshin")
+	envVarConfigs := []HoyoCheckInOpt{
+		{
+			Name:      "Genshin",
+			SignInURL: os.Getenv("GENSHIN_SIGN_IN_URL"),
+			ActID:     os.Getenv("GENSHIN_ACT_ID"),
+		},
+		{
+			Name:      "HSR",
+			SignInURL: os.Getenv("HSR_SIGN_IN_URL"),
+			ActID:     os.Getenv("HSR_ACT_ID"),
+		},
+		{
+			Name:      "ZZZ",
+			SignInURL: os.Getenv("ZZZ_SIGN_IN_URL"),
+			ActID:     os.Getenv("ZZZ_ACT_ID"),
+		},
+		{
+			Name:      "HI3",
+			SignInURL: os.Getenv("HI3_SIGN_IN_URL"),
+			ActID:     os.Getenv("HI3_ACT_ID"),
+		},
+		{
+			Name:      "TOT",
+			SignInURL: os.Getenv("TOT_SIGN_IN_URL"),
+			ActID:     os.Getenv("TOT_ACT_ID"),
+		},
 	}
 
-	if honkaiSR != "" {
-		resp, err = helper.ApiClientHoyo(hoyoSignInUrl, hoyoCookie, honkaiSR).Post("")
-		helper.PanicIfError(err)
+	for _, config := range envVarConfigs {
+		if config.ActID != "" {
+			resp, err = helper.ApiClientHoyo(hoyoCookie, config.ActID).Post(config.SignInURL)
+			helper.PanicIfError(err)
 
-		fmt.Println(resp, "Honkai SR")
-	}
-
-	if zenlessZZ != "" {
-		resp, err = helper.ApiClientHoyo(hoyoSignInUrl, hoyoCookie, zenlessZZ).Post("")
-		helper.PanicIfError(err)
-
-		fmt.Println(resp, "ZZZ")
-	}
-
-	if honkaiI3Rd != "" {
-		resp, err = helper.ApiClientHoyo(hoyoSignInUrl, hoyoCookie, honkaiI3Rd).Post("")
-		helper.PanicIfError(err)
-
-		fmt.Println(resp, "HI3")
-	}
-
-	if tot != "" {
-		resp, err = helper.ApiClientHoyo(hoyoSignInUrl, hoyoCookie, tot).Post("")
-		helper.PanicIfError(err)
-
-		fmt.Println(resp, "TOT")
+			fmt.Println(resp, config.Name)
+		}
 	}
 }

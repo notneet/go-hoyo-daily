@@ -5,7 +5,7 @@ import (
 	"github.com/iunary/fakeuseragent"
 )
 
-func ApiClientHoyo(host string, cookie string, actId string) *resty.Request {
+func ApiClientHoyo(cookie string, actId string) *resty.Request {
 	randomUA := fakeuseragent.RandomUserAgent()
 
 	return resty.New().
@@ -19,7 +19,6 @@ func ApiClientHoyo(host string, cookie string, actId string) *resty.Request {
 			"Sec-Fetch-Mode":  "cors",
 			"Sec-Fetch-Site":  "same-site",
 		}).
-		SetBaseURL(host).
 		R().
 		SetBody(`{"act_id":"` + actId + `","lang":"en-us"}`)
 }
