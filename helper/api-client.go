@@ -1,11 +1,13 @@
 package helper
 
 import (
+	"os"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/iunary/fakeuseragent"
 )
 
-func ApiClientHoyo(cookie string, actId string) *resty.Request {
+func ApiClientHoyo(cookie, actId, signGame string) *resty.Request {
 	randomUA := fakeuseragent.RandomUserAgent()
 
 	return resty.New().
@@ -18,7 +20,10 @@ func ApiClientHoyo(cookie string, actId string) *resty.Request {
 			"Sec-Fetch-Dest":  "empty",
 			"Sec-Fetch-Mode":  "cors",
 			"Sec-Fetch-Site":  "same-site",
+			"Priority":        "u=0",
+			"x-rpc-signgame":  signGame,
 		}).
+		SetDebug(os.Getenv("ENV") == "development").
 		R().
 		SetBody(`{"act_id":"` + actId + `","lang":"en-us"}`)
 }

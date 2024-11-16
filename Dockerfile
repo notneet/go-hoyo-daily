@@ -1,5 +1,5 @@
 # Select Golang Version
-FROM golang:1.21.3-alpine
+FROM golang:1.23.2-alpine
 
 # Setup Directory project in container
 WORKDIR /src/app

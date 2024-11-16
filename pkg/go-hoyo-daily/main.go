@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/joho/godotenv"
@@ -69,7 +70,7 @@ func doJob() {
 
 	for _, config := range envVarConfigs {
 		if config.ActID != "" {
-			resp, err = helper.ApiClientHoyo(hoyoCookie, config.ActID).Post(config.SignInURL)
+			resp, err = helper.ApiClientHoyo(hoyoCookie, config.ActID, strings.ToLower(config.Name)).Post(config.SignInURL)
 			helper.PanicIfError(err)
 
 			fmt.Println(resp, config.Name)
