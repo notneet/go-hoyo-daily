@@ -1,4 +1,4 @@
-package helper
+package httpclient
 
 import (
 	"os"
@@ -7,10 +7,20 @@ import (
 	"github.com/iunary/fakeuseragent"
 )
 
-func ApiClientHoyo(cookie, actId, signGame string) *resty.Request {
+type HttpClient struct {
+	client *resty.Client
+}
+
+func NewHttpClient() *HttpClient {
+	return &HttpClient{
+		client: resty.New().SetDebug(os.Getenv("ENV") == "development"),
+	}
+}
+
+func (h *HttpClient) ApiClientHoyo(cookie, actId, signGame string) *resty.Request {
 	randomUA := fakeuseragent.RandomUserAgent()
 
-	return resty.New().
+	return h.client.
 		SetHeaders(map[string]string{
 			"User-Agent":      randomUA,
 			"Accept":          "application/json, text/plain, */*",
@@ -23,7 +33,6 @@ func ApiClientHoyo(cookie, actId, signGame string) *resty.Request {
 			"Priority":        "u=0",
 			"x-rpc-signgame":  signGame,
 		}).
-		SetDebug(os.Getenv("ENV") == "development").
 		R().
 		SetBody(`{"act_id":"` + actId + `","lang":"en-us"}`)
 }

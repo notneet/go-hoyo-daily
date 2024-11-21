@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-hoyo-daily
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-hoyo-daily
+  template:
+    metadata:
+      labels:
+        app: go-hoyo-daily
+    spec:
+      containers:
+        - name: go-hoyo-daily
+          image: "hanivanrizky/go-hoyo-daily:2.0.0"
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "64Mi"
+            limits:
+              cpu: "20m"
+              memory: "128Mi"
+          env:
+            - name: SENTRY_DSN
+              value: ""
+            - name: HOYOLAB_COOKIES
+              value: ""
+            - name: HSR_SIGN_IN_URL
+              value: "https://sg-public-api.hoyolab.com/event/luna/os/sign"
+            - name: GENSHIN_SIGN_IN_URL
+              value: "https://sg-hk4e-api.hoyolab.com/event/sol/sign?lang=en-us"
+            - name: ZZZ_SIGN_IN_URL
+              value: "https://sg-public-api.hoyolab.com/event/luna/zzz/os/sign"
+            - name: HI3_SIGN_IN_URL
+              value: ""
+            - name: TOT_SIGN_IN_URL
+              value: ""
+            - name: GENSHIN_ACT_ID
+              value: "e2021xxxx"
+            - name: HSR_ACT_ID
+              value: "e2023xxxx"
+            - name: ZZZ_ACT_ID
+              value: "e2024xxxx"
+            - name: HI3_ACT_ID
+              value: ""
+            - name: TOT_ACT_ID
+              value: ""
+          ports:
+            - containerPort: 4444
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-hoyo-daily
+spec:
+  selector:
+    app: go-hoyo-daily # This matches the labels of the NGINX pods
+  externalIPs:
+    - 192.168.49.2 # << minikube ip. In prod, replace with your IP Public
+  ports:
+    - protocol: TCP
+      port: 4444 # Exposing port 80 on the service
+      targetPort: 4444 # The port the NGINX container is listening on
+  type: LoadBalancer # This type automatically provisions an external load balancer
