@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"log/slog"
+	"os"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/notneet/go-hoyo-daily/internal/service"
@@ -73,6 +74,7 @@ func (h *RootHandler) Stop(ctx context.Context) error {
 		return ctx.Err()
 	default:
 		h.logger.Info("bot stopped successfully")
+		os.Exit(0)
 		return nil
 	}
 }
